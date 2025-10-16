@@ -27,16 +27,19 @@ def getDegeneracy(inputNodeDict):
 
 
     # Get the system's Mutual information
-    mI = getSystemMI(Globals.nodeDict)
+    mI = getSystemMI(inputNodeDict)
     aveMIDict = {}
     resultDict = {}
     sumTotal = 0
     # start the sum component
+    print("...Calculating Sum Components...")
     for u in range (1, numNodes+1):
-        aveMI = getAveMI(u)
+        print(f'...{u}/{numNodes}...')
+        aveMI = getAveMI(u, inputNodeDict)
         aveMIDict[u] = aveMI
         scalar = u/numNodes
 
+        
         partA = aveMI
         partB = scalar * mI
 
@@ -44,10 +47,12 @@ def getDegeneracy(inputNodeDict):
         resultDict[u] = equation
         sumTotal = sumTotal + equation
 
-        print(f'{u} size complete.')
+        #print(f'{u} size complete.')
 
+    print(f'\n')
     print(f'Degeneracy Calculation Completed')
     print(f'DN(x;O) = {sumTotal}')
+    return sumTotal
     print(f'\n')
 
 
@@ -55,10 +60,10 @@ def getDegeneracy(inputNodeDict):
 
 
 # def get average mutual information during pertubation
-def getAveMI(subsetSize):
+def getAveMI(subsetSize, inputNodeDict):
     
     u = subsetSize
-    nodeIds = list(Globals.nodeDict.keys())
+    nodeIds = list(inputNodeDict.keys())
 
     # Generate subsets
     subsets = list(itertools.combinations(nodeIds, u))
@@ -69,17 +74,17 @@ def getAveMI(subsetSize):
         # get node Obj
         jNodeList = {}
         for jid in subsetJ:
-            nvalue = Globals.nodeDict[jid]
+            nvalue = inputNodeDict[jid]
             jNodeList[jid] = nvalue
         
         # get subset mutual information under pertubation
         jMi = getSubSystemMI(jNodeList)
         jMiArray.append(jMi)
-        print(f'Size {u} Subset {subsetJ} MI {jMi}')
+        #print(f'Size {u} Subset {subsetJ} MI {jMi}')
     
     average = sum(jMiArray) / len(jMiArray)
-    print(f'\n{subsetSize} Calculation Complete. Average: {average}')
-    print("here")
+    #print(f'\n{subsetSize} Calculation Complete. Average: {average}')
+    #print("here")
 
     return average
 
@@ -91,7 +96,7 @@ def getEntropy(probabilityDistributionList):
 # Get mutual information of sub system
 def getSubSystemMI(nodeList):
 
-    print("...Calculating Sub-System Mutual Information...")
+    #print("...Calculating Sub-System Mutual Information...")
 
     # add pertubation
     for nodeId, node in nodeList.items():
@@ -152,7 +157,7 @@ def getSubSystemMI(nodeList):
 
     # Calculate MI of whole system
     mutualInformation_system = entropyInput_X + entropyOutput_O - entropyJoint_XO
-    print(f'Sub-System Mutual Information: {mutualInformation_system}')
+    #print(f'Sub-System Mutual Information: {mutualInformation_system}')
     return mutualInformation_system
     print("here")
 
@@ -185,7 +190,7 @@ def getSystemMI(nodeList):
             # add to flat combinedTotalInput list
             temp_combinedTotalInput.extend(inputArray)
             # get current node from globals
-            currentNode = Globals.nodeDict[nodeCount+1]
+            currentNode = nodeList[nodeCount+1]
             # get output value for that input node combination
             outputVal = currentNode.lookupDict[inputArray]
             temp_combinedTotalOutput.append(outputVal)
@@ -224,9 +229,9 @@ def getSystemMI(nodeList):
 
     # Calculate MI of whole system
     mutualInformation_system = entropyInput_X + entropyOutput_O - entropyJoint_XO
-    print(f'System Mutual Information: {mutualInformation_system}')
+    #print(f'System Mutual Information: {mutualInformation_system}')
     return mutualInformation_system
-    print("here")
+    #print("here")
 
 
 

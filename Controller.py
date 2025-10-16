@@ -1,6 +1,8 @@
 # Controller script for the simulator
 import DegeneracySim
 import Globals
+import Sisor
+import SisorMemSaver
 
 def mainMenu():
     run = True
@@ -10,8 +12,7 @@ def mainMenu():
         print("What would you like to do?")
         print("----------------------------------------")
         print("(1) Original System Degeneracy")
-        print("(2) SISOR Alone")
-        print("(3) SISOR then Degeneracy")
+        print("(2) SISOR then Degeneracy")
         mainMenuOp= input("Choose Option: ")
         print("You Selected " + mainMenuOp)
 
@@ -20,9 +21,6 @@ def mainMenu():
             # Calculate degeneracy of default system
             DegeneracySim.getDegeneracy(Globals.nodeDict)
         if mainMenuOp == "2":
-            # Apply SISOR methodology
-            print("TBC")
-        if mainMenuOp == "3":
             # Apply SISOR and then calculate degeneracy
-            print("TBC")
+            Sisor.sisorIntro()
 

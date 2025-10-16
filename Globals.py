@@ -28,3 +28,18 @@ global indexCounter
 indexCounter = 0
 
 
+# SISOR conflict decision point
+global sisorConflictDp
+sisorConflictDp = 0.93
+
+# SISOR maximum level of acceptable degradation
+global sisorMaxDegradation
+sisorMaxDegradation = 0.3
+
+# SISOR sensitivity to conflict
+global sisorSensConflict
+sisorSensConflict = 10
+
+# SISOR conflict likelihood
+global sisorConflictProb
+sisorConflictProb = 0.5
