@@ -26,7 +26,7 @@ def buildRandom(numNodes):
     averageInput = Globals.averageInput
     
     # random nums approx between 0 and 4
-    inputNumArray = np.random.poisson(lam=averageInput, size=numNodes)
+    inputNumArray = poissonReplaceZeros(averageInput, numNodes)
 
 
     # For loop to generate individual nodes
@@ -36,6 +36,7 @@ def buildRandom(numNodes):
 
     # For loop to assign input nodes randomly
     count = 0
+    
     for nodeId, node in Globals.nodeDict.items():
         numInput = inputNumArray[count]
         for i in range (0, numInput):
@@ -63,6 +64,12 @@ def buildRandom(numNodes):
 
     Controller.mainMenu()
 
+# Stops the distribution from having unconnected floating nodes  
+def poissonReplaceZeros(lam, size):
+    result = np.random.poisson(lam, size)
+    while np.any(result == 0):
+        zeros = (result == 0)
+        result[zeros] = np.random.poisson(lam, np.sum(zeros))
+    return result 
     
-    
-    print("here")
+print("here")

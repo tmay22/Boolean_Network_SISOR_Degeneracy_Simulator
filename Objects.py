@@ -7,7 +7,8 @@ import Globals
 class Node:
 
     def __init__(self):
-        self.id = uuid.uuid4()
+        Globals.indexCounter = Globals.indexCounter + 1
+        self.id = Globals.indexCounter
         # inputNodes is expected to be a list of Nodes
         self.inputNodes = []
         # lookup output table

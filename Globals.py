@@ -16,7 +16,15 @@ averageInput = 2
 
 
 # random chance of a bit flip occuring per timestep
+global ranBitFlip
 ranBitFlip = 0.05
 
 # pertubation chance via injection of bit flip
+global pertubation
 pertubation = 0.25
+
+# counter of indexes
+global indexCounter
+indexCounter = 0
+
+

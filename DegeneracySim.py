@@ -2,6 +2,8 @@
 import Globals
 import math
 from collections import Counter
+from itertools import product
+import itertools
 
 
 # get the degeneracy of system
@@ -23,28 +25,213 @@ def getDegeneracy(inputNodeDict):
     # dictionary of the key value pairs of the MI graph (x,y)
     graphMI = {}
 
+
+    # Get the system's Mutual information
+    mI = getSystemMI(Globals.nodeDict)
+    aveMIDict = {}
+    resultDict = {}
+    sumTotal = 0
     # start the sum component
     for u in range (1, numNodes+1):
-        aveMI = getAveMI()
+        aveMI = getAveMI(u)
+        aveMIDict[u] = aveMI
         scalar = u/numNodes
-        mI = getMI()
 
+        partA = aveMI
+        partB = scalar * mI
 
+        equation = partA - partB
+        resultDict[u] = equation
+        sumTotal = sumTotal + equation
 
+        print(f'{u} size complete.')
+
+    print(f'Degeneracy Calculation Completed')
+    print(f'DN(x;O) = {sumTotal}')
+    print(f'\n')
 
 
     # want something to graph this too - STRETCH
 
+
 # def get average mutual information during pertubation
-def getAveMI():
-    return None
+def getAveMI(subsetSize):
+    
+    u = subsetSize
+    nodeIds = list(Globals.nodeDict.keys())
+
+    # Generate subsets
+    subsets = list(itertools.combinations(nodeIds, u))
+
+    jMiArray = []
+
+    for subsetJ in subsets:
+        # get node Obj
+        jNodeList = {}
+        for jid in subsetJ:
+            nvalue = Globals.nodeDict[jid]
+            jNodeList[jid] = nvalue
+        
+        # get subset mutual information under pertubation
+        jMi = getSubSystemMI(jNodeList)
+        jMiArray.append(jMi)
+        print(f'Size {u} Subset {subsetJ} MI {jMi}')
+    
+    average = sum(jMiArray) / len(jMiArray)
+    print(f'\n{subsetSize} Calculation Complete. Average: {average}')
+    print("here")
+
+    return average
 
 def getEntropy(probabilityDistributionList):
     #Calculate entropy from probability distribution list
     res = -sum(p * math.log2(p) for p in probabilityDistributionList if p > 0)
     return res 
 
-# get the mutual information during pertubation
+# Get mutual information of sub system
+def getSubSystemMI(nodeList):
+
+    print("...Calculating Sub-System Mutual Information...")
+
+    # add pertubation
+    for nodeId, node in nodeList.items():
+        node.timestep()
+
+
+    # get a list of all the input states
+
+    allInputStates = [list(node.lookupDict.keys()) for node in nodeList.values()]
+    
+    #All the nodes tables times by each other
+    productInputStates = list(product(*allInputStates))
+    
+    combinedInputs = []
+    combinedOutputs = []
+
+    for productInputOption in productInputStates:
+        temp_combinedTotalInput = []
+        temp_combinedTotalOutput = []
+
+        for node, inputArray in zip(nodeList.values(), productInputOption):
+            temp_combinedTotalInput.extend(inputArray)
+            outputVal = node.lookupDict[inputArray]
+            temp_combinedTotalOutput.append(outputVal)
+
+        # Add to overall inputs and outputs
+        combinedInputs.append(tuple(temp_combinedTotalInput))
+        combinedOutputs.append(tuple(temp_combinedTotalOutput))
+        
+        #print("here")
+
+    # compute probability distributions
+
+    # inputs
+    countInputs = Counter(combinedInputs)
+    sumInputs = sum(countInputs.values())
+    # Input probability distribution
+    probDistInput = [count / sumInputs for count in countInputs.values()]
+    # Input entropy
+    entropyInput_X = getEntropy(probDistInput)
+
+    # outputs
+    countOutputs = Counter(combinedOutputs)
+    sumOutputs = sum(countOutputs.values())
+    # Output probability distribution
+    probDistOutput = [count / sumOutputs for count in countOutputs.values()]
+    # Output entropy
+    entropyOutput_O = getEntropy(probDistOutput)
+
+    # joint input output
+    countJoint = Counter(zip(combinedInputs, combinedOutputs))
+    sumJoint = sum(countJoint.values())
+    # Joint probability distribution list
+    probDistJoint = [count / sumJoint for count in countJoint.values()]
+    # joint entropy
+    entropyJoint_XO = getEntropy(probDistJoint)
+
+
+    # Calculate MI of whole system
+    mutualInformation_system = entropyInput_X + entropyOutput_O - entropyJoint_XO
+    print(f'Sub-System Mutual Information: {mutualInformation_system}')
+    return mutualInformation_system
+    print("here")
+
+
+
+# Get mutual information of entire system
+def getSystemMI(nodeList):
+
+    print("...Calculating System Mutual Information...")
+
+    # add pertubation
+    for nodeId, node in nodeList.items():
+        node.timestep()
+
+
+    # get a list of all the input states
+
+    allInputStates = [list(node.lookupDict.keys()) for node in nodeList.values()]
+    
+    #All the nodes tables times by each other
+    productInputStates = list(product(*allInputStates))
+    
+    combinedInputs = []
+    combinedOutputs = []
+
+    for productInputOption in productInputStates:
+        temp_combinedTotalInput = []
+        temp_combinedTotalOutput = []
+        for nodeCount, inputArray in enumerate(productInputOption):
+            # add to flat combinedTotalInput list
+            temp_combinedTotalInput.extend(inputArray)
+            # get current node from globals
+            currentNode = Globals.nodeDict[nodeCount+1]
+            # get output value for that input node combination
+            outputVal = currentNode.lookupDict[inputArray]
+            temp_combinedTotalOutput.append(outputVal)
+        # Add to overall inputs and outputs
+        combinedInputs.append(tuple(temp_combinedTotalInput))
+        combinedOutputs.append(tuple(temp_combinedTotalOutput))
+        
+        #print("here")
+
+    # compute probability distributions
+
+    # inputs
+    countInputs = Counter(combinedInputs)
+    sumInputs = sum(countInputs.values())
+    # Input probability distribution
+    probDistInput = [count / sumInputs for count in countInputs.values()]
+    # Input entropy
+    entropyInput_X = getEntropy(probDistInput)
+
+    # outputs
+    countOutputs = Counter(combinedOutputs)
+    sumOutputs = sum(countOutputs.values())
+    # Output probability distribution
+    probDistOutput = [count / sumOutputs for count in countOutputs.values()]
+    # Output entropy
+    entropyOutput_O = getEntropy(probDistOutput)
+
+    # joint input output
+    countJoint = Counter(zip(combinedInputs, combinedOutputs))
+    sumJoint = sum(countJoint.values())
+    # Joint probability distribution list
+    probDistJoint = [count / sumJoint for count in countJoint.values()]
+    # joint entropy
+    entropyJoint_XO = getEntropy(probDistJoint)
+
+
+    # Calculate MI of whole system
+    mutualInformation_system = entropyInput_X + entropyOutput_O - entropyJoint_XO
+    print(f'System Mutual Information: {mutualInformation_system}')
+    return mutualInformation_system
+    print("here")
+
+
+
+
+# OLDDDDDDD gets it only for a single node with no pertubation
 def getMI(nodeList):
 
     for node in nodeList:
@@ -93,6 +280,6 @@ def getMI(nodeList):
 
         # mutual Information calculation
         mutualInformation = entropy_Xval + entropy_Oval - entropy_XOval
-        
-         
+
+
     return None
