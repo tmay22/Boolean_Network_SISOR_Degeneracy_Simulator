@@ -41,6 +41,8 @@ def buildRandom(numNodes):
         numInput = inputNumArray[count]
         for i in range (0, numInput):
             ranIn = random.choice(list(Globals.nodeDict.values()))
+            while ranIn.id == nodeId or ranIn in node.inputNodes:
+                ranIn = random.choice(list(Globals.nodeDict.values()))
             node.inputNodes.append(ranIn)
         count = count + 1
 

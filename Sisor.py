@@ -7,9 +7,10 @@ from scipy.stats import norm
 import random
 from itertools import product
 import DegeneracySim
+import copy
 
 # introductory component
-def sisorIntro():
+def sisorIntro(originalDict):
     # Preamble and initial option selection
     print("How many timesteps?")
     timesteps= input("Enter here: ")
@@ -21,12 +22,13 @@ def sisorIntro():
 
        # sisor completed
 
+       sisorDict = copy.deepcopy(originalDict)
+       sisorDict = runSisor(sisorDict, timesteps)
+       
        origDegeneracy = DegeneracySim.getDegeneracy(Globals.nodeDict)
        
        print(f'Original Network Degeneracy: {origDegeneracy}')
 
-       sisorDict = Globals.nodeDict.copy()
-       sisorDict = runSisor(sisorDict, timesteps)
        
        sisorDegeneracy = DegeneracySim.getDegeneracy(sisorDict)
 
@@ -59,6 +61,7 @@ def runSisor(nodeDict, numTimesteps):
     
     # Loop through timesteps
     if frequency != 0:
+        print("...Starting SISOR Replication...")
         for step in range(1, numTimesteps+1):
             print(f'...Timestep {step}/{numTimesteps}...')
             
@@ -119,6 +122,7 @@ def runSisor(nodeDict, numTimesteps):
 
                             # make new lookup table
                             tempDict = {}
+                            node.lookupDict = {}
                             inputNodes = node.inputNodes
                             inputNodes.append(chosenNode)
                             numNodes = len(inputNodes)
@@ -133,8 +137,11 @@ def runSisor(nodeDict, numTimesteps):
                                     node.lookupDict[lookupArray] = output
 
                             # table updated!
+                if step == numTimesteps+1:
+                    node.sisorFinish()
 
     print("")
+    Globals.sisorDict = nodeDict
     return(nodeDict)
             
 

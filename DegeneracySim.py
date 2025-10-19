@@ -4,6 +4,7 @@ import math
 from collections import Counter
 from itertools import product
 import itertools
+import Graph
 
 
 # get the degeneracy of system
@@ -52,6 +53,7 @@ def getDegeneracy(inputNodeDict):
     print(f'\n')
     print(f'Degeneracy Calculation Completed')
     print(f'DN(x;O) = {sumTotal}')
+    #Graph.graphNetwork(inputNodeDict)
     return sumTotal
     print(f'\n')
 

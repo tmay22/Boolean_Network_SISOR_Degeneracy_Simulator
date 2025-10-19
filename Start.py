@@ -12,7 +12,7 @@ def main():
 
     # For now these are hard-coded but these can be queried in future from user
     # numNodes is the number of Nodes in the network. Is only required for base networks
-    numNodes = 10
+    numNodes = 7
     # Path is the path to the csv input files. Is only required for applied networks
     path = ""
     # 1 = Base | 2 = Applied

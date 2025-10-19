@@ -10,6 +10,10 @@ caseType = 0
 global nodeDict
 nodeDict = {}
 
+# Dictionary of nodes after the sisor application
+global sisorDict
+sisorDict = {}
+
 # avaerage number of inputs per node (mean K value)
 global averageInput
 averageInput = 2
@@ -42,4 +46,4 @@ sisorSensConflict = 10
 
 # SISOR conflict likelihood
 global sisorConflictProb
-sisorConflictProb = 0.5
+sisorConflictProb = 0.9
