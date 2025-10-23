@@ -2,14 +2,13 @@
 import DegeneracySim
 import Globals
 import Sisor
-import SisorMemSaver
 import Graph
 
 def mainMenu():
     run = True
     while run:
         # Preamble and initial option selection
-        print("----------------------------------------")
+        print("----------------------------------------")        
         print("What would you like to do?")
         print("----------------------------------------")
         print("(1) Original System Degeneracy")
@@ -25,7 +24,10 @@ def mainMenu():
             DegeneracySim.getDegeneracy(Globals.nodeDict)
         if mainMenuOp == "2":
             # Apply SISOR and then calculate degeneracy
-            Sisor.sisorIntro(Globals.nodeDict)
+            if len(Globals.sisorDict)>0:
+                Sisor.sisorIntro(Globals.sisorDict)
+            else:
+                Sisor.sisorIntro(Globals.nodeDict)
         if mainMenuOp == "3":
             # graph the original network
             Graph.graphNetwork(Globals.nodeDict)
