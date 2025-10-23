@@ -25,7 +25,7 @@ def buildRandom(numNodes):
     # avaerage number of inputs per node (mean K value)
     averageInput = Globals.averageInput
     
-    # random nums approx between 0 and 4
+    # random nums approx between 0 and 4 if K=2
     inputNumArray = poissonReplaceZeros(averageInput, numNodes)
 
 

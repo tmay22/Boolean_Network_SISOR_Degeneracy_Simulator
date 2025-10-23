@@ -47,3 +47,11 @@ sisorSensConflict = 10
 # SISOR conflict likelihood
 global sisorConflictProb
 sisorConflictProb = 0.9
+
+# SISOR new node likelihood (alt to new connection)global sisorNewNodeProb
+global sisorNewNodeProb
+sisorNewNodeProb = 0.4
+
+# change log to record changes to the network
+global changeLog
+changeLog = []

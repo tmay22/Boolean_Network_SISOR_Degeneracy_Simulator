@@ -30,7 +30,9 @@ def getDegeneracy(inputNodeDict):
     # Get the system's Mutual information
     mI = getSystemMI(inputNodeDict)
     aveMIDict = {}
-    resultDict = {}
+    allresultDict = {}
+    aveResultDict = {}
+    wholeSubResultDict = {}
     sumTotal = 0
     # start the sum component
     print("...Calculating Sum Components...")
@@ -45,7 +47,9 @@ def getDegeneracy(inputNodeDict):
         partB = scalar * mI
 
         equation = partA - partB
-        resultDict[u] = equation
+        allresultDict[u] = equation
+        aveResultDict[u] = partA
+        wholeSubResultDict[u] = partB
         sumTotal = sumTotal + equation
 
         #print(f'{u} size complete.')
@@ -53,7 +57,8 @@ def getDegeneracy(inputNodeDict):
     print(f'\n')
     print(f'Degeneracy Calculation Completed')
     print(f'DN(x;O) = {sumTotal}')
-    #Graph.graphNetwork(inputNodeDict)
+    Graph.plotDegeneracyEq(aveResultDict,wholeSubResultDict)
+    Graph.plotDegeneracyOnly(allresultDict)
     return sumTotal
     print(f'\n')
 
@@ -104,7 +109,23 @@ def getSubSystemMI(nodeList):
     for nodeId, node in nodeList.items():
         node.timestep()
 
+    # update status based on lookup tables
+    for nodeId, node in nodeList.items():
+        inputNodes = node.inputNodes
+        lookupTable = node.lookupDict
+        resultArray = []
+        
+        # looks up the PAST status of the nodes in the input node list (in case they have already updated)
+        for node in inputNodes:
+            nodeStatus = node.pastStatus
+            resultArray.append(nodeStatus)
+        # convert array to tuple
+        resultTuple = tuple(resultArray)
 
+        # Lookup new status and update
+        lookupStatus = lookupTable[resultTuple]
+        node.status = lookupStatus
+        
     # get a list of all the input states
 
     allInputStates = [list(node.lookupDict.keys()) for node in nodeList.values()]
@@ -174,7 +195,23 @@ def getSystemMI(nodeList):
     for nodeId, node in nodeList.items():
         node.timestep()
 
+    # update status based on lookup tables
+    for nodeId, node in nodeList.items():
+        inputNodes = node.inputNodes
+        lookupTable = node.lookupDict
+        resultArray = []
+        
+        # looks up the PAST status of the nodes in the input node list (in case they have already updated)
+        for nodeal in inputNodes:
+            nodeStatus = nodeal.pastStatus
+            resultArray.append(nodeStatus)
+        # convert array to tuple
+        resultTuple = tuple(resultArray)
 
+        # Lookup new status and update
+        lookupStatus = lookupTable[resultTuple]
+        node.status = lookupStatus
+        
     # get a list of all the input states
 
     allInputStates = [list(node.lookupDict.keys()) for node in nodeList.values()]
