@@ -16,7 +16,7 @@ sisorDict = {}
 
 # avaerage number of inputs per node (mean K value)
 global averageInput
-averageInput = 2
+averageInput = 1
 
 
 # random chance of a bit flip occuring per timestep
@@ -50,7 +50,7 @@ sisorConflictProb = 0.9
 
 # SISOR new node likelihood (alt to new connection)global sisorNewNodeProb
 global sisorNewNodeProb
-sisorNewNodeProb = 0.4
+sisorNewNodeProb = 1
 
 # change log to record changes to the network
 global changeLog
