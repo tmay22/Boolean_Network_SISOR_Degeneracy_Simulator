@@ -15,6 +15,11 @@ def mainMenu():
         print("(2) SISOR then Degeneracy")
         print("(3) Graph Original Network")
         print("(4) Graph SISOR Network")
+        print("(5) SISOR re-calculate degeneracy")
+
+        print("(6) Original System Degeneracy multi-calc")
+        print("(7) SISOR System Degeneracy multi-calc")
+
         mainMenuOp= input("Choose Option: ")
         print("You Selected " + mainMenuOp)
 
@@ -22,7 +27,7 @@ def mainMenu():
         if mainMenuOp == "1":
             # Calculate degeneracy of default system  AND REDUNDANCY
             DegeneracySim.getDegeneracy(Globals.nodeDict)
-            DegeneracySim.getRedundancy(Globals.nodeDict)
+            #DegeneracySim.getRedundancy(Globals.nodeDict)
             
         if mainMenuOp == "2":
             # Apply SISOR and then calculate degeneracy AND REDUNDANCY
@@ -36,5 +41,14 @@ def mainMenu():
         if mainMenuOp == "4":
             # graph the sisor network
             Graph.graphNetwork(Globals.sisorDict)
+        if mainMenuOp == "5":
+            # recalculate sisor degeneracy
+            DegeneracySim.getDegeneracy(Globals.sisorDict)
+        if mainMenuOp == "6":
+            # recalculate sisor degeneracy
+            DegeneracySim.getDegeneracyMulti(Globals.nodeDict, 0)
+        if mainMenuOp == "7":
+            # recalculate sisor degeneracy
+            DegeneracySim.getDegeneracyMulti(Globals.sisorDict, Globals.timestep)
 
 

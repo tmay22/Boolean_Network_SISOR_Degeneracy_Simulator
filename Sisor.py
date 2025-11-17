@@ -39,7 +39,9 @@ def sisorIntro(originalDict):
        #sisorRedundancy = DegeneracySim.getRedundancy(newSisorDict)
 
        print(f'SISOR Network Degeneracy: {sisorDegeneracy}')   
-       #print(f'SISOR Network Redundancy: {sisorRedundancy}')   
+       #print(f'SISOR Network Redundancy: {sisorRedundancy}') 
+
+       Globals.timestep = Globals.timestep + timesteps  
 
        print("COMPLETED")     
 
@@ -93,6 +95,7 @@ def doSisor(nodeDict, frequency ):
     # add sisor outages
     # resets the past status of all nodes
     for nodeId, node in nodeDict.items():
+        node.removeLesion(nodeDict)
         node.resetStatus()
         node.bitFlipOnlyTimestep()
         node.sisorTimestep(frequency)
