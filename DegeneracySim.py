@@ -6,6 +6,40 @@ from itertools import product
 import itertools
 import Graph
 
+# get the redundancy of the system
+def getRedundancy(nodeDict):
+    redCalc = 0
+    redSum = 0
+    redDict = {}
+    partADict = {}
+    partBDict = {}
+
+    numSubsets = len(nodeDict.items())
+
+    partB = getSystemMI(nodeDict)
+
+    for i in range (1, numSubsets+1):
+
+        selectNode = nodeDict[i]
+        tempDict = {}
+        tempDict[1] = selectNode
+        
+        print(f'...{i}/{numSubsets}...')
+        partA = getSystemMI(tempDict)
+
+        
+        redSum = redSum + partA
+        
+        partADict[i] = partA
+    
+    redCalc = redSum - partB
+
+    
+    #Graph.plotRedundancy(partADict,partBDict)
+    #Graph.plotRedundancyOnly(redDict)
+    return redCalc
+
+
 
 # get the degeneracy of system
 def getDegeneracy(inputNodeDict):
@@ -111,20 +145,7 @@ def getSubSystemMI(nodeList):
 
     # update status based on lookup tables
     for nodeId, node in nodeList.items():
-        inputNodes = node.inputNodes
-        lookupTable = node.lookupDict
-        resultArray = []
-        
-        # looks up the PAST status of the nodes in the input node list (in case they have already updated)
-        for node in inputNodes:
-            nodeStatus = node.pastStatus
-            resultArray.append(nodeStatus)
-        # convert array to tuple
-        resultTuple = tuple(resultArray)
-
-        # Lookup new status and update
-        lookupStatus = lookupTable[resultTuple]
-        node.status = lookupStatus
+        node.updateStatus()
         
     # get a list of all the input states
 
@@ -197,20 +218,7 @@ def getSystemMI(nodeList):
 
     # update status based on lookup tables
     for nodeId, node in nodeList.items():
-        inputNodes = node.inputNodes
-        lookupTable = node.lookupDict
-        resultArray = []
-        
-        # looks up the PAST status of the nodes in the input node list (in case they have already updated)
-        for nodeal in inputNodes:
-            nodeStatus = nodeal.pastStatus
-            resultArray.append(nodeStatus)
-        # convert array to tuple
-        resultTuple = tuple(resultArray)
-
-        # Lookup new status and update
-        lookupStatus = lookupTable[resultTuple]
-        node.status = lookupStatus
+        node.updateStatus()
         
     # get a list of all the input states
 

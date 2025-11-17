@@ -96,3 +96,20 @@ class Node:
             self.pastStatus = 0
         elif self.status ==1:
             self.pastStatus = 1
+    
+    # update the status of the node
+    def updateStatus(self):
+        inputNodes = self.inputNodes
+        lookupTable = self.lookupDict
+        resultArray = []
+        
+        # looks up the PAST status of the nodes in the input node list (in case they have already updated)
+        for node in inputNodes:
+            nodeStatus = node.pastStatus
+            resultArray.append(nodeStatus)
+        # convert array to tuple
+        resultTuple = tuple(resultArray)
+
+        # Lookup new status and update
+        lookupStatus = lookupTable[resultTuple]
+        node.status = lookupStatus

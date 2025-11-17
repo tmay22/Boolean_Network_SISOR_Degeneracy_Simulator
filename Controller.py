@@ -20,10 +20,12 @@ def mainMenu():
 
         # Setup Option division
         if mainMenuOp == "1":
-            # Calculate degeneracy of default system
+            # Calculate degeneracy of default system  AND REDUNDANCY
             DegeneracySim.getDegeneracy(Globals.nodeDict)
+            DegeneracySim.getRedundancy(Globals.nodeDict)
+            
         if mainMenuOp == "2":
-            # Apply SISOR and then calculate degeneracy
+            # Apply SISOR and then calculate degeneracy AND REDUNDANCY
             if len(Globals.sisorDict)>0:
                 Sisor.sisorIntro(Globals.sisorDict)
             else:
@@ -34,4 +36,5 @@ def mainMenu():
         if mainMenuOp == "4":
             # graph the sisor network
             Graph.graphNetwork(Globals.sisorDict)
+
 

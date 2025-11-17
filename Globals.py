@@ -49,6 +49,7 @@ global sisorConflictProb
 sisorConflictProb = 0.9
 
 # SISOR new node likelihood (alt to new connection)global sisorNewNodeProb
+
 global sisorNewNodeProb
 sisorNewNodeProb = 1
 
