@@ -7,9 +7,12 @@ import itertools
 import Graph
 from datetime import datetime
 import csv
+import copy
 
 # run multiple degeneracy calculations
-def getDegeneracyMulti(inputNodeDict, timeIn):
+def getDegeneracyMulti(inputNodeDictOrig, timeIn):
+
+    inputNodeDict = copy.deepcopy(inputNodeDictOrig)
 
     # find out how many count
     # Preamble and initial option selection
@@ -18,17 +21,29 @@ def getDegeneracyMulti(inputNodeDict, timeIn):
     print("You said " + timesteps)
     timesteps = int(timesteps)
 
-    details = f'{Globals.sessionId}_T{timeIn}_K{Globals.averageInput}.N{Globals.numNodes}.P{Globals.sisorNewNodeProb*100}'
+    details = f'{Globals.sessionId}_T{timeIn}_K{Globals.averageInput}.N{Globals.numNodes}.P{int(Globals.sisorNewNodeProb*100)}_'
 
     outDict = {}
+    aveMIGraphDict = {}
+    aveScalarSysMIGraphDict = {}
+    aveDegenDict = {}
+
+    uMIDict = {}
+    uScalarDict = {}
+    uDegenDict = {}
+
+
+    
 
     count = 0
 
     if timesteps > 0:
 
-        while count < timesteps:
+        
 
-                
+        while count < timesteps:
+            
+           
                 # N val
             numNodes = len(inputNodeDict)
             # X val
@@ -39,11 +54,7 @@ def getDegeneracyMulti(inputNodeDict, timeIn):
             for name,value in inputNodeDict.items():
                 nodeList.append(value)
 
-            # SOMETHING IS WRONG WITH THE GRAPHS
-            # dictionary of the key value pairs of the degeneracy graph (x,y)
-            graphD = {}
-            # dictionary of the key value pairs of the MI graph (x,y)
-            graphMI = {}
+            
 
 
             # Get the system's Mutual information
@@ -71,6 +82,25 @@ def getDegeneracyMulti(inputNodeDict, timeIn):
                 wholeSubResultDict[u] = partB
                 sumTotal = sumTotal + equation
 
+                if u in uMIDict:
+                    array = uMIDict[u]
+                    array.append(partA)
+                else:
+                    uMIDict[u] = [partA]
+
+                if u in uScalarDict:
+                    array = uScalarDict[u]
+                    array.append(partB)
+                else:
+                    uScalarDict[u] = [partB]
+
+                if u in uDegenDict:
+                    array = uDegenDict[u]
+                    array.append(equation)
+                else:
+                    uDegenDict[u] = [equation]
+                
+
                 #print(f'{u} size complete.')
 
             print(f'\n')
@@ -82,6 +112,9 @@ def getDegeneracyMulti(inputNodeDict, timeIn):
             #
             # eturn sumTotal
             outDict[count] = sumTotal
+
+
+
             count = count + 1
 
     path = "./Outputs"
@@ -106,10 +139,40 @@ def getDegeneracyMulti(inputNodeDict, timeIn):
     allAve = allSum / timesteps
     posAve = posSum / posCount
 
+    aveSum = 0
+    aveScalar = 0
+    aveDegen = 0
+
+    for uVal, arrayAns in uMIDict.items():
+        for num in arrayAns:
+            aveSum = aveSum + num
+        calc = aveSum / len(arrayAns)
+        aveMIGraphDict[uVal] = calc
+    
+    for uVal, arrayAns in uScalarDict.items():
+        for num in arrayAns:
+            aveScalar = aveScalar + num
+        calc = aveScalar / len(arrayAns)
+        aveScalarSysMIGraphDict[uVal] = calc
+
+    for uVal, arrayAns in uDegenDict.items():
+        for num in arrayAns:
+            aveDegen = aveDegen + num
+        calc = aveDegen / len(arrayAns)
+        aveDegenDict[uVal] = calc
+
+
     print(f'----------------------------------------')
 
     print(f'Average of all degeneracies for {file}:\n {allAve}')
     #print(f'Average of positive-only degeneracies for {file}:\n {posAve}')
+    Graph.plotDegeneracyEq(aveMIGraphDict,aveScalarSysMIGraphDict)
+    Graph.plotDegeneracyOnly(aveDegenDict)
+
+    # Add to global tracking for average degeneracy
+    Globals.tAveDegenDict[timeIn] = allAve
+
+    print(f'----------------------------------------')
 
 # get the redundancy of the system
 def getRedundancy(nodeDict):
@@ -147,7 +210,9 @@ def getRedundancy(nodeDict):
 
 
 # get the degeneracy of system
-def getDegeneracy(inputNodeDict):
+def getDegeneracy(inputNodeDictOrig):
+
+    inputNodeDict = copy.deepcopy(inputNodeDictOrig)
 
     # N val
     numNodes = len(inputNodeDict)
@@ -194,6 +259,10 @@ def getDegeneracy(inputNodeDict):
         #print(f'{u} size complete.')
 
     print(f'\n')
+    print('System MI:', mI)
+    print('Subset Sizes:', u)
+    print('Ave MI per subset:', aveMIDict)
+    print('Scaled System MI:', [u/numNodes * mI for u in range(1,numNodes+1)])
     print(f'Degeneracy Calculation Completed')
     print(f'DN(x;O) = {sumTotal}')
     cleanup(inputNodeDict)
@@ -346,13 +415,12 @@ def getSystemMI(nodeList):
     for productInputOption in productInputStates:
         temp_combinedTotalInput = []
         temp_combinedTotalOutput = []
-        for nodeCount, inputArray in enumerate(productInputOption):
+        # Iterate directly over node objects, matching input arrays in order
+        for node, inputArray in zip(nodeList.values(), productInputOption):
             # add to flat combinedTotalInput list
             temp_combinedTotalInput.extend(inputArray)
-            # get current node from globals
-            currentNode = nodeList[nodeCount+1]
             # get output value for that input node combination
-            outputVal = currentNode.lookupDict[inputArray]
+            outputVal = node.lookupDict[inputArray]
             temp_combinedTotalOutput.append(outputVal)
         # Add to overall inputs and outputs
         combinedInputs.append(tuple(temp_combinedTotalInput))

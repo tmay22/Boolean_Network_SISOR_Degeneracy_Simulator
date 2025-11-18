@@ -1,12 +1,16 @@
 # Globals variables for the simulator
 
+# timestep degeneracy dict
+global tAveDegenDict
+tAveDegenDict = {}
+
 # unique sessionID
 global sessionId
 sessionId = None
 
 # number of nodes 
 global numNodes
-numNodes = 8
+numNodes = 7
 
 # The type of case for the simulator
 # 1 = "Base" case where nodes do not have names
@@ -41,7 +45,7 @@ pertubation = 0.25
 
 # lesioning percentage
 global lesion
-lesion = 0.1
+lesion = 0.2
 
 # counter of indexes
 global indexCounter
@@ -67,7 +71,7 @@ sisorConflictProb = 0.9
 # SISOR new node likelihood (alt to new connection)global sisorNewNodeProb
 
 global sisorNewNodeProb
-sisorNewNodeProb = 0.5
+sisorNewNodeProb = 0.3
 
 # change log to record changes to the network
 global changeLog

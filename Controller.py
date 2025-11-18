@@ -19,6 +19,8 @@ def mainMenu():
 
         print("(6) Original System Degeneracy multi-calc")
         print("(7) SISOR System Degeneracy multi-calc")
+        print("(8) Graph timestepAverageDegeneracy dictionary for SISOR")
+
 
         mainMenuOp= input("Choose Option: ")
         print("You Selected " + mainMenuOp)
@@ -50,5 +52,11 @@ def mainMenu():
         if mainMenuOp == "7":
             # recalculate sisor degeneracy
             DegeneracySim.getDegeneracyMulti(Globals.sisorDict, Globals.timestep)
+        if mainMenuOp == "8":
+            # Graph timestepAverageDegeneracy dictionary for SISOR
+            Graph.plotSisorTimestepDegen(Globals.tAveDegenDict)
+        
+
+
 
 
