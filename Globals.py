@@ -10,7 +10,7 @@ sessionId = None
 
 # number of nodes 
 global numNodes
-numNodes = 7
+numNodes = 10
 
 # The type of case for the simulator
 # 1 = "Base" case where nodes do not have names
@@ -45,7 +45,7 @@ pertubation = 0.25
 
 # lesioning percentage
 global lesion
-lesion = 0.2
+lesion = 0.1
 
 # counter of indexes
 global indexCounter
@@ -72,6 +72,7 @@ sisorConflictProb = 0.9
 
 global sisorNewNodeProb
 sisorNewNodeProb = 0.3
+
 
 # change log to record changes to the network
 global changeLog

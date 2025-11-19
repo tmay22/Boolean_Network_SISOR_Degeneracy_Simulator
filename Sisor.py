@@ -10,10 +10,57 @@ import DegeneracySim
 import copy
 import Objects
 
+# introductory component to run a bulk degeneracy calc over 100 calc. Over x sisor timesteps.
+def bulkSisor():
+    # Preamble and initial option selection
+    print("How many timesteps (each individually calculated)?")
+    timesteps= input("Enter here: ")
+    print("You said " + timesteps)
+    timesteps = int(timesteps)
+
+    count = 0
+
+    
+
+    # default timesteps to 1 (fixes issues)
+    #timesteps = 1
+    if timesteps >0:
+
+        while count <= timesteps:
+                
+            if len(Globals.sisorDict)>0:
+                originalDict = Globals.sisorDict
+
+                sisorDict = copy.deepcopy(originalDict)
+                newSisorDict = runSisor(sisorDict, 1)
+                # static num timesteps set to 20
+                sisorDegeneracy = DegeneracySim.getDegeneracyMulti(newSisorDict, Globals.timestep, 20)
+            
+            else:
+                originalDict = Globals.nodeDict
+                newDict = copy.deepcopy(originalDict)
+                origDegeneracy = DegeneracySim.getDegeneracyMulti(newDict, Globals.timestep, 20)
+                
+
+            # sisor completed
+
+            
+
+
+            Globals.timestep = Globals.timestep + 1
+            count = count + 1
+
+                 
+
+    else:
+        print("timesteps must be greater than 0")
+    
+    print("Completed")
+
 # introductory component
 def sisorIntro(originalDict):
     # Preamble and initial option selection
-    print("How many timesteps?")
+    print("How many timesteps in a single calculation?")
     timesteps= input("Enter here: ")
     print("You said " + timesteps)
     timesteps = int(timesteps)

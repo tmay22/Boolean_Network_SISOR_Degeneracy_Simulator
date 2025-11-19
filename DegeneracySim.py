@@ -9,10 +9,8 @@ from datetime import datetime
 import csv
 import copy
 
-# run multiple degeneracy calculations
-def getDegeneracyMulti(inputNodeDictOrig, timeIn):
 
-    inputNodeDict = copy.deepcopy(inputNodeDictOrig)
+def getDegenMultiTSteps(inputNodeDictOrig, timeIn):
 
     # find out how many count
     # Preamble and initial option selection
@@ -21,7 +19,17 @@ def getDegeneracyMulti(inputNodeDictOrig, timeIn):
     print("You said " + timesteps)
     timesteps = int(timesteps)
 
-    details = f'{Globals.sessionId}_T{timeIn}_K{Globals.averageInput}.N{Globals.numNodes}.P{int(Globals.sisorNewNodeProb*100)}_'
+    getDegeneracyMulti(inputNodeDictOrig, timeIn, timesteps)
+
+
+# run multiple degeneracy calculations
+def getDegeneracyMulti(inputNodeDictOrig, timeIn, timesteps):
+
+    inputNodeDict = copy.deepcopy(inputNodeDictOrig)
+
+    
+
+    details = f'{Globals.sessionId}_T{timeIn}_K{Globals.averageInput}.N{Globals.numNodes}.P{int(Globals.sisorNewNodeProb*100)}'
 
     outDict = {}
     aveMIGraphDict = {}

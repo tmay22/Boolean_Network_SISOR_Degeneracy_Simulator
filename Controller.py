@@ -20,6 +20,7 @@ def mainMenu():
         print("(6) Original System Degeneracy multi-calc")
         print("(7) SISOR System Degeneracy multi-calc")
         print("(8) Graph timestepAverageDegeneracy dictionary for SISOR")
+        print("(9) Bulk SISOR and Degeneracy starting at T=0 - no graphs")
 
 
         mainMenuOp= input("Choose Option: ")
@@ -48,13 +49,16 @@ def mainMenu():
             DegeneracySim.getDegeneracy(Globals.sisorDict)
         if mainMenuOp == "6":
             # recalculate sisor degeneracy
-            DegeneracySim.getDegeneracyMulti(Globals.nodeDict, 0)
+            DegeneracySim.getDegenMultiTSteps(Globals.nodeDict, 0)
         if mainMenuOp == "7":
             # recalculate sisor degeneracy
-            DegeneracySim.getDegeneracyMulti(Globals.sisorDict, Globals.timestep)
+            DegeneracySim.getDegenMultiTSteps(Globals.sisorDict, Globals.timestep)
         if mainMenuOp == "8":
             # Graph timestepAverageDegeneracy dictionary for SISOR
             Graph.plotSisorTimestepDegen(Globals.tAveDegenDict)
+        if mainMenuOp == "9":
+            # Bulk SISOR and Degeneracy - no graphs
+            Sisor.bulkSisor()
         
 
 
