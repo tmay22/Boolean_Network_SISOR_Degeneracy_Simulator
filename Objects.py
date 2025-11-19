@@ -207,22 +207,23 @@ class Node:
     def sisorTimestep(self, probability):
         # reset if already experiencing outage
         if self.sisorOutageFlag == True:
-            res = random.randint(0, 1)
-            self.status = res
+            # two comments below changed for sisor outage if statement instead of 0 status if stateement
+            #res = random.randint(0, 1)
+            #self.status = res
             self.sisorOutageFlag = False
         # new outage chance
         outage = False
         res = random.random()
         if res <= probability:
-            self.status = 0
+            #self.status = 0
             self.sisorOutageFlag = True
     
     # clean up after sisor finishes
     def sisorFinish(self):
         # finishes the sisor outage and resets nodes
             if self.sisorOutageFlag == True:
-                res = random.randint(0, 1)
-                self.status = res
+                #res = random.randint(0, 1)
+                #self.status = res
                 self.sisorOutageFlag = False
 
     # updates the past status to the current status

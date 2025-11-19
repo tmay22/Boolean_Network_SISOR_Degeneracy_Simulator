@@ -3,6 +3,7 @@ import DegeneracySim
 import Globals
 import Sisor
 import Graph
+import Export
 
 def mainMenu():
     run = True
@@ -22,6 +23,7 @@ def mainMenu():
         print("(8) Graph timestepAverageDegeneracy dictionary for SISOR")
         print("(9) Bulk SISOR and Degeneracy starting at T=0 - no graphs")
 
+        print("(10) Export all average sim data to appropriate dictionary")
 
         mainMenuOp= input("Choose Option: ")
         print("You Selected " + mainMenuOp)
@@ -59,6 +61,13 @@ def mainMenu():
         if mainMenuOp == "9":
             # Bulk SISOR and Degeneracy - no graphs
             Sisor.bulkSisor()
+        if mainMenuOp == "10":
+            # Export all average sim data to appropriate dictionary
+            path, id = Export.getMainDictNameDetails()
+            Export.addToDict(path, Globals.tAveDegenDict, id)
+
+            
+        
         
 
 

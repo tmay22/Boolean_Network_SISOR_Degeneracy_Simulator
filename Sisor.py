@@ -19,27 +19,34 @@ def bulkSisor():
     timesteps = int(timesteps)
 
     count = 0
+    started = False
 
-    
+    # resets everything
+    Globals.tAveDegenDict = {}
+    Globals.timestep = 0
+    Globals.sisorDict = {}
+    Globals.tAveDegenDict = {}
 
     # default timesteps to 1 (fixes issues)
     #timesteps = 1
     if timesteps >0:
 
         while count <= timesteps:
-                
-            if len(Globals.sisorDict)>0:
-                originalDict = Globals.sisorDict
-
-                sisorDict = copy.deepcopy(originalDict)
-                newSisorDict = runSisor(sisorDict, 1)
-                # static num timesteps set to 20
-                sisorDegeneracy = DegeneracySim.getDegeneracyMulti(newSisorDict, Globals.timestep, 20)
             
+            timer = 0
+            if len(Globals.tAveDegenDict) > 0:
+                originalDict = Globals.sisorDict
+                timer = Globals.timestep
             else:
                 originalDict = Globals.nodeDict
-                newDict = copy.deepcopy(originalDict)
-                origDegeneracy = DegeneracySim.getDegeneracyMulti(newDict, Globals.timestep, 20)
+                timer = Globals.timestep
+
+            sisorDict = copy.deepcopy(originalDict)
+            newSisorDict = runSisor(sisorDict, 1)
+            # static num timesteps set to 20
+            sisorDegeneracy = DegeneracySim.getDegeneracyMulti(newSisorDict, timer, 100)
+            
+
                 
 
             # sisor completed
@@ -157,7 +164,8 @@ def doSisor(nodeDict, frequency ):
     for nodeId, node in nodeDict.items():
         # The following is to replace what would happen in a C-CPSS at the real level
         # randomness normal distribution is used to determine node criticality
-        if node.status == 0:
+        #if node.status == 0:
+        if node.sisorOutageFlag == True:
             mean = 0.50
             sD = 0.15
             currentCriticality = np.random.normal(loc=mean, scale=sD)

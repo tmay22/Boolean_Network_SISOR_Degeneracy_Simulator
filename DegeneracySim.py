@@ -8,6 +8,7 @@ import Graph
 from datetime import datetime
 import csv
 import copy
+import Export
 
 
 def getDegenMultiTSteps(inputNodeDictOrig, timeIn):
@@ -125,15 +126,17 @@ def getDegeneracyMulti(inputNodeDictOrig, timeIn, timesteps):
 
             count = count + 1
 
-    path = "./Outputs"
+    path = "./Individual_Sim_Outputs"
     details = str(details)
     file = str(f'{path}/{details}.csv')
 
-    with open(file, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow(['Key', 'Value'])  # header
-        for key, value in outDict.items():
-            writer.writerow([key, value])
+    Export.expNewDict(file,outDict)
+
+    # with open(file, 'w', newline='') as f:
+    #     writer = csv.writer(f)
+    #     writer.writerow(['Key', 'Value'])  # header
+    #     for key, value in outDict.items():
+    #         writer.writerow([key, value])
 
     posCount = 0
     posSum = 0
@@ -174,8 +177,10 @@ def getDegeneracyMulti(inputNodeDictOrig, timeIn, timesteps):
 
     print(f'Average of all degeneracies for {file}:\n {allAve}')
     #print(f'Average of positive-only degeneracies for {file}:\n {posAve}')
-    Graph.plotDegeneracyEq(aveMIGraphDict,aveScalarSysMIGraphDict)
-    Graph.plotDegeneracyOnly(aveDegenDict)
+
+    # TURN GRAPHS ON AND OFF FOR CONVENIENCE HERE
+    #Graph.plotDegeneracyEq(aveMIGraphDict,aveScalarSysMIGraphDict)
+    #Graph.plotDegeneracyOnly(aveDegenDict)
 
     # Add to global tracking for average degeneracy
     Globals.tAveDegenDict[timeIn] = allAve
