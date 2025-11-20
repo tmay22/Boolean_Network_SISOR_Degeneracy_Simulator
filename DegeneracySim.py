@@ -5,10 +5,227 @@ from collections import Counter
 from itertools import product
 import itertools
 import Graph
+from datetime import datetime
+import csv
+import copy
+import Export
+
+
+def getDegenMultiTSteps(inputNodeDictOrig, timeIn):
+
+    # find out how many count
+    # Preamble and initial option selection
+    print("How many timesteps?")
+    timesteps= input("Enter here: ")
+    print("You said " + timesteps)
+    timesteps = int(timesteps)
+
+    getDegeneracyMulti(inputNodeDictOrig, timeIn, timesteps)
+
+
+# run multiple degeneracy calculations
+def getDegeneracyMulti(inputNodeDictOrig, timeIn, timesteps):
+
+    inputNodeDict = copy.deepcopy(inputNodeDictOrig)
+
+    
+
+    details = f'{Globals.sessionId}_T{timeIn}_K{Globals.averageInput}.N{Globals.numNodes}.P{int(Globals.sisorNewNodeProb*100)}'
+
+    outDict = {}
+    aveMIGraphDict = {}
+    aveScalarSysMIGraphDict = {}
+    aveDegenDict = {}
+
+    uMIDict = {}
+    uScalarDict = {}
+    uDegenDict = {}
+
+
+    
+
+    count = 0
+
+    if timesteps > 0:
+
+        
+
+        while count < timesteps:
+            
+           
+                # N val
+            numNodes = len(inputNodeDict)
+            # X val
+            nodeList = []
+            # K val
+            averageInput = Globals.averageInput
+
+            for name,value in inputNodeDict.items():
+                nodeList.append(value)
+
+            
+
+
+            # Get the system's Mutual information
+            mI = getSystemMI(inputNodeDict)
+            aveMIDict = {}
+            allresultDict = {}
+            aveResultDict = {}
+            wholeSubResultDict = {}
+            sumTotal = 0
+            # start the sum component
+            print("...Calculating Sum Components...")
+            for u in range (1, numNodes+1):
+                print(f'...{u}/{numNodes}...')
+                aveMI = getAveMI(u, inputNodeDict)
+                aveMIDict[u] = aveMI
+                scalar = u/numNodes
+
+                
+                partA = aveMI
+                partB = scalar * mI
+
+                equation = partA - partB
+                allresultDict[u] = equation
+                aveResultDict[u] = partA
+                wholeSubResultDict[u] = partB
+                sumTotal = sumTotal + equation
+
+                if u in uMIDict:
+                    array = uMIDict[u]
+                    array.append(partA)
+                else:
+                    uMIDict[u] = [partA]
+
+                if u in uScalarDict:
+                    array = uScalarDict[u]
+                    array.append(partB)
+                else:
+                    uScalarDict[u] = [partB]
+
+                if u in uDegenDict:
+                    array = uDegenDict[u]
+                    array.append(equation)
+                else:
+                    uDegenDict[u] = [equation]
+                
+
+                #print(f'{u} size complete.')
+
+            print(f'\n')
+            print(f'Degeneracy Calculation Completed')
+            print(f'DN(x;O) = {sumTotal}')
+            cleanup(inputNodeDict)
+            #Graph.plotDegeneracyEq(aveResultDict,wholeSubResultDict)
+            #Graph.plotDegeneracyOnly(allresultDict)
+            #
+            # eturn sumTotal
+            outDict[count] = sumTotal
+
+
+
+            count = count + 1
+
+    path = "./Individual_Sim_Outputs"
+    details = str(details)
+    file = str(f'{path}/{details}.csv')
+
+    Export.expNewDict(file,outDict)
+
+    # with open(file, 'w', newline='') as f:
+    #     writer = csv.writer(f)
+    #     writer.writerow(['Key', 'Value'])  # header
+    #     for key, value in outDict.items():
+    #         writer.writerow([key, value])
+
+    posCount = 0
+    posSum = 0
+    allSum = 0
+    for id, val in outDict.items():
+        allSum = allSum + val
+        if val > 0:
+            posSum = posSum + val
+            posCount = posCount + 1
+    
+    allAve = allSum / timesteps
+    posAve = posSum / posCount
+
+    aveSum = 0
+    aveScalar = 0
+    aveDegen = 0
+
+    for uVal, arrayAns in uMIDict.items():
+        for num in arrayAns:
+            aveSum = aveSum + num
+        calc = aveSum / len(arrayAns)
+        aveMIGraphDict[uVal] = calc
+    
+    for uVal, arrayAns in uScalarDict.items():
+        for num in arrayAns:
+            aveScalar = aveScalar + num
+        calc = aveScalar / len(arrayAns)
+        aveScalarSysMIGraphDict[uVal] = calc
+
+    for uVal, arrayAns in uDegenDict.items():
+        for num in arrayAns:
+            aveDegen = aveDegen + num
+        calc = aveDegen / len(arrayAns)
+        aveDegenDict[uVal] = calc
+
+
+    print(f'----------------------------------------')
+
+    print(f'Average of all degeneracies for {file}:\n {allAve}')
+    #print(f'Average of positive-only degeneracies for {file}:\n {posAve}')
+
+    # TURN GRAPHS ON AND OFF FOR CONVENIENCE HERE
+    #Graph.plotDegeneracyEq(aveMIGraphDict,aveScalarSysMIGraphDict)
+    #Graph.plotDegeneracyOnly(aveDegenDict)
+
+    # Add to global tracking for average degeneracy
+    Globals.tAveDegenDict[timeIn] = allAve
+
+    print(f'----------------------------------------')
+
+# get the redundancy of the system
+def getRedundancy(nodeDict):
+    redCalc = 0
+    redSum = 0
+    redDict = {}
+    partADict = {}
+    partBDict = {}
+
+    numSubsets = len(nodeDict.items())
+
+    partB = getSystemMI(nodeDict)
+
+    for i in range (1, numSubsets+1):
+
+        selectNode = nodeDict[i]
+        tempDict = {}
+        tempDict[1] = selectNode
+        
+        print(f'...{i}/{numSubsets}...')
+        partA = getSystemMI(tempDict)
+
+        
+        redSum = redSum + partA
+        
+        partADict[i] = partA
+    
+    redCalc = redSum - partB
+
+    
+    #Graph.plotRedundancy(partADict,partBDict)
+    #Graph.plotRedundancyOnly(redDict)
+    return redCalc
+
 
 
 # get the degeneracy of system
-def getDegeneracy(inputNodeDict):
+def getDegeneracy(inputNodeDictOrig):
+
+    inputNodeDict = copy.deepcopy(inputNodeDictOrig)
 
     # N val
     numNodes = len(inputNodeDict)
@@ -55,8 +272,13 @@ def getDegeneracy(inputNodeDict):
         #print(f'{u} size complete.')
 
     print(f'\n')
+    print('System MI:', mI)
+    print('Subset Sizes:', u)
+    print('Ave MI per subset:', aveMIDict)
+    print('Scaled System MI:', [u/numNodes * mI for u in range(1,numNodes+1)])
     print(f'Degeneracy Calculation Completed')
     print(f'DN(x;O) = {sumTotal}')
+    cleanup(inputNodeDict)
     Graph.plotDegeneracyEq(aveResultDict,wholeSubResultDict)
     Graph.plotDegeneracyOnly(allresultDict)
     return sumTotal
@@ -105,26 +327,14 @@ def getSubSystemMI(nodeList):
 
     #print("...Calculating Sub-System Mutual Information...")
 
-    # add pertubation
+    # add pertubation and lesioning
     for nodeId, node in nodeList.items():
         node.timestep()
+        node.lesionTimestep(nodeList)
 
     # update status based on lookup tables
     for nodeId, node in nodeList.items():
-        inputNodes = node.inputNodes
-        lookupTable = node.lookupDict
-        resultArray = []
-        
-        # looks up the PAST status of the nodes in the input node list (in case they have already updated)
-        for node in inputNodes:
-            nodeStatus = node.pastStatus
-            resultArray.append(nodeStatus)
-        # convert array to tuple
-        resultTuple = tuple(resultArray)
-
-        # Lookup new status and update
-        lookupStatus = lookupTable[resultTuple]
-        node.status = lookupStatus
+        node.updateStatus()
         
     # get a list of all the input states
 
@@ -181,6 +391,11 @@ def getSubSystemMI(nodeList):
     # Calculate MI of whole system
     mutualInformation_system = entropyInput_X + entropyOutput_O - entropyJoint_XO
     #print(f'Sub-System Mutual Information: {mutualInformation_system}')
+    
+    # Finish lesioning
+    for nodeId, node in nodeList.items():
+        node.removeLesion(nodeList)
+
     return mutualInformation_system
     print("here")
 
@@ -194,23 +409,11 @@ def getSystemMI(nodeList):
     # add pertubation
     for nodeId, node in nodeList.items():
         node.timestep()
+        node.lesionTimestep(nodeList)
 
     # update status based on lookup tables
     for nodeId, node in nodeList.items():
-        inputNodes = node.inputNodes
-        lookupTable = node.lookupDict
-        resultArray = []
-        
-        # looks up the PAST status of the nodes in the input node list (in case they have already updated)
-        for nodeal in inputNodes:
-            nodeStatus = nodeal.pastStatus
-            resultArray.append(nodeStatus)
-        # convert array to tuple
-        resultTuple = tuple(resultArray)
-
-        # Lookup new status and update
-        lookupStatus = lookupTable[resultTuple]
-        node.status = lookupStatus
+        node.updateStatus()
         
     # get a list of all the input states
 
@@ -225,13 +428,12 @@ def getSystemMI(nodeList):
     for productInputOption in productInputStates:
         temp_combinedTotalInput = []
         temp_combinedTotalOutput = []
-        for nodeCount, inputArray in enumerate(productInputOption):
+        # Iterate directly over node objects, matching input arrays in order
+        for node, inputArray in zip(nodeList.values(), productInputOption):
             # add to flat combinedTotalInput list
             temp_combinedTotalInput.extend(inputArray)
-            # get current node from globals
-            currentNode = nodeList[nodeCount+1]
             # get output value for that input node combination
-            outputVal = currentNode.lookupDict[inputArray]
+            outputVal = node.lookupDict[inputArray]
             temp_combinedTotalOutput.append(outputVal)
         # Add to overall inputs and outputs
         combinedInputs.append(tuple(temp_combinedTotalInput))
@@ -269,6 +471,11 @@ def getSystemMI(nodeList):
     # Calculate MI of whole system
     mutualInformation_system = entropyInput_X + entropyOutput_O - entropyJoint_XO
     #print(f'System Mutual Information: {mutualInformation_system}')
+
+    # Finish lesioning
+    for nodeId, node in nodeList.items():
+        node.removeLesion(nodeList)
+
     return mutualInformation_system
     #print("here")
 
@@ -327,3 +534,8 @@ def getMI(nodeList):
 
 
     return None
+
+# cleanup lesions at the end
+def cleanup(nodeDict):
+    for nodei, node in nodeDict.items():
+        node.removeLesion(nodeDict)
