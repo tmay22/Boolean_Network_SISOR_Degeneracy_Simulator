@@ -60,7 +60,10 @@ def mainMenu():
             Graph.plotSisorTimestepDegen(Globals.tAveDegenDict)
         if mainMenuOp == "9":
             # Bulk SISOR and Degeneracy - no graphs
+            # Then export automatically
             Sisor.bulkSisor()
+            path, id = Export.getMainDictNameDetails()
+            Export.addToDict(path, Globals.tAveDegenDict, id)
         if mainMenuOp == "10":
             # Export all average sim data to appropriate dictionary
             path, id = Export.getMainDictNameDetails()
