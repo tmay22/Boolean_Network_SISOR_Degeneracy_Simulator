@@ -10,7 +10,7 @@ sessionId = None
 
 # number of nodes 
 global numNodes
-numNodes = 10
+numNodes = 7
 
 # number of degeneracy calculations made to average
 global numCalcForAve
