@@ -179,8 +179,8 @@ def getDegeneracyMulti(inputNodeDictOrig, timeIn, timesteps):
     #print(f'Average of positive-only degeneracies for {file}:\n {posAve}')
 
     # TURN GRAPHS ON AND OFF FOR CONVENIENCE HERE
-    Graph.plotDegeneracyEq(aveMIGraphDict,aveScalarSysMIGraphDict)
-    Graph.plotDegeneracyOnly(aveDegenDict)
+    #Graph.plotDegeneracyEq(aveMIGraphDict,aveScalarSysMIGraphDict)
+    #Graph.plotDegeneracyOnly(aveDegenDict)
 
     # Add to global tracking for average degeneracy
     Globals.tAveDegenDict[timeIn] = allAve

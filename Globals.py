@@ -10,7 +10,7 @@ sessionId = None
 
 # number of nodes 
 global numNodes
-numNodes = 7
+numNodes = 10
 
 # number of degeneracy calculations made to average
 global numCalcForAve
@@ -75,7 +75,7 @@ sisorConflictProb = 0.9
 # SISOR new node likelihood (alt to new connection)global sisorNewNodeProb
 
 global sisorNewNodeProb
-sisorNewNodeProb = 0.1
+sisorNewNodeProb = 0.3
 
 
 # change log to record changes to the network
