@@ -75,11 +75,7 @@ sisorConflictProb = 0.9
 # SISOR new node likelihood (alt to new connection)global sisorNewNodeProb
 
 global sisorNewNodeProb
-<<<<<<< HEAD
-sisorNewNodeProb = 1
-=======
-sisorNewNodeProb = 0.8
->>>>>>> origin
+sisorNewNodeProb = 0.4
 
 
 # change log to record changes to the network
